@@ -50,6 +50,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #=============================================================================
 
+set(Python_ADDITIONAL_VERSIONS 3.5)
+
 # Checking for the extension makes sure that `LibsNew` was found and not just `Libs`.
 if(PYTHONLIBS_FOUND AND PYTHON_MODULE_EXTENSION)
     return()

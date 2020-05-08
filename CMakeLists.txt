@@ -294,5 +294,5 @@ INSTALL(FILES ${PROJECT_BINARY_DIR}/g2o/config.h DESTINATION ${CMAKE_INSTALL_PRE
 ADD_SUBDIRECTORY(EXTERNAL)
 ADD_SUBDIRECTORY(g2o)
 
-ADD_SUBDIRECTORY(contrib)   # added for python binding
+#ADD_SUBDIRECTORY(contrib)   # added for python binding
 ADD_SUBDIRECTORY(python)   # added for python binding

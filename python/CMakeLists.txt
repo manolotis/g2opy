@@ -22,13 +22,6 @@ target_link_libraries(g2o PRIVATE
     solver_slam2d_linear
     solver_structure_only
     types_data
-    types_icp
-    types_sba
-    types_sclam2d
-    types_sim3
     types_slam2d
     types_slam2d_addons
-    types_slam3d
-    types_slam3d_addons
-    contrib
 )

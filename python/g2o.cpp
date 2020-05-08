@@ -29,10 +29,6 @@
 
 #include "types/types.h"
 
-#include "contrib/contrib.h"
-
-// #include "g2o/core/factory.h"
-// #include "g2o/stuff/macros.h"
 
 
 
@@ -73,8 +69,6 @@ PYBIND11_MODULE(g2o, m) {
     delcareSparseOptimizerTerminateAction(m);
 
     declareTypes(m);
-
-    declareContrib(m);
 
 }
 

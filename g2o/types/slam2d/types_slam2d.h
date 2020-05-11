@@ -34,6 +34,7 @@
 #include "edge_se2_prior.h"
 #include "edge_se2_xyprior.h"
 #include "edge_se2.h"
+#include "edge_se2_custom.h"
 #include "edge_se2_pointxy.h"
 #include "edge_se2_pointxy_bearing.h"
 #include "edge_se2_pointxy_calib.h"

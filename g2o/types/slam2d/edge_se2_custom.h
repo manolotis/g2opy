@@ -28,41 +28,89 @@
 #define G2O_EDGE_SE2_CUSTOM_H
 
 #include "vertex_se2.h"
-#include "g2o_types_slam2d_api.h"
+#include "g2o/config.h"
 #include "g2o/core/base_binary_edge.h"
+#include "g2o_types_slam2d_api.h"
 
 namespace g2o {
 
-
-    /**
-     * \brief 2D edge between two Vertex2, i.e., the odometry
-     */
-    class G2O_TYPES_SLAM2D_API EdgeSE2Custom : public BaseBinaryEdge<3, SE2, VertexSE2, VertexSE2> {
+  /**
+   * \brief 2D edge between two Vertex2
+   */
+  class G2O_TYPES_SLAM2D_API EdgeSE2Custom : public BaseBinaryEdge<3, SE2, VertexSE2, VertexSE2>
+  {
     public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+      EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+      EdgeSE2Custom();
 
-        EdgeSE2Custom();
+      void computeError()
+      {
+        const VertexSE2* v1 = static_cast<const VertexSE2*>(_vertices[0]);
+        const VertexSE2* v2 = static_cast<const VertexSE2*>(_vertices[1]);
+        SE2 delta = _inverseMeasurement * (v1->estimate().inverse()*v2->estimate());
+        _error = delta.toVector();
+      }
+      virtual bool read(std::istream& is);
+      virtual bool write(std::ostream& os) const;
 
-        void computeError() {
-            const VertexSE2 *v1 = static_cast<const VertexSE2 *>(_vertices[0]);
-            const VertexSE2 *v2 = static_cast<const VertexSE2 *>(_vertices[1]);
-            SE2 delta = _inverseMeasurement * (v1->estimate().inverse() * v2->estimate());
-            _error = delta.toVector();
-        }
+      virtual void setMeasurement(const SE2& m){
+        _measurement = m;
+        _inverseMeasurement = m.inverse();
+      }
 
-        void setMeasurement(const SE2 &m) {
-            _measurement = m;
-            _inverseMeasurement = m.inverse();
-        }
+      virtual bool setMeasurementData(const double* d){
+        _measurement=SE2(d[0], d[1], d[2]);
+        _inverseMeasurement = _measurement.inverse();
+        return true;
+      }
 
-        virtual bool read(std::istream &is);
+      virtual bool getMeasurementData(double* d) const {
+        Vector3D v=_measurement.toVector();
+        d[0] = v[0];
+        d[1] = v[1];
+        d[2] = v[2];
+        return true;
+      }
 
-        virtual bool write(std::ostream &os) const;
+      virtual int measurementDimension() const {return 3;}
 
+      virtual bool setMeasurementFromState() {
+        const VertexSE2* v1 = static_cast<const VertexSE2*>(_vertices[0]);
+        const VertexSE2* v2 = static_cast<const VertexSE2*>(_vertices[1]);
+        _measurement = v1->estimate().inverse()*v2->estimate();
+        _inverseMeasurement = _measurement.inverse();
+        return true;
+      }
+
+
+      virtual double initialEstimatePossible(const OptimizableGraph::VertexSet& , OptimizableGraph::Vertex* ) { return 1.;}
+      virtual void initialEstimate(const OptimizableGraph::VertexSet& from, OptimizableGraph::Vertex* to);
+#ifndef NUMERIC_JACOBIAN_TWO_D_TYPES
+      virtual void linearizeOplus();
+#endif
     protected:
-        SE2 _inverseMeasurement;
-    };
+      SE2 _inverseMeasurement;
+  };
 
+  class G2O_TYPES_SLAM2D_API EdgeSE2CustomWriteGnuplotAction: public WriteGnuplotAction {
+  public:
+    EdgeSE2CustomWriteGnuplotAction();
+    virtual HyperGraphElementAction* operator()(HyperGraph::HyperGraphElement* element,
+            HyperGraphElementAction::Parameters* params_);
+  };
+
+#ifdef G2O_HAVE_OPENGL
+  class G2O_TYPES_SLAM2D_API EdgeSE2CustomDrawAction: public DrawAction{
+  public:
+    EdgeSE2CustomDrawAction();
+    virtual HyperGraphElementAction* operator()(HyperGraph::HyperGraphElement* element,
+            HyperGraphElementAction::Parameters* params_);
+  protected:
+    virtual bool refreshPropertyPtrs(HyperGraphElementAction::Parameters* params_);
+    FloatProperty* _triangleX, *_triangleY;
+
+  };
+#endif
 
 } // end namespace
 

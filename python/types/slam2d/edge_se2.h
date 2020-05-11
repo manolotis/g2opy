@@ -2,6 +2,7 @@
 #include <pybind11/eigen.h>
 
 #include <g2o/types/slam2d/edge_se2.h>
+#include <g2o/types/slam2d/edge_se2_custom.h>
 #include <g2o/types/slam2d/edge_se2_lotsofxy.h>
 #include <g2o/types/slam2d/edge_se2_offset.h>
 
@@ -40,6 +41,21 @@ void declareEdgeSE2(py::module& m) {
 
     //class G2O_TYPES_SLAM2D_API EdgeSE2WriteGnuplotAction: public WriteGnuplotAction
     //class G2O_TYPES_SLAM2D_API EdgeSE2DrawAction: public DrawAction
+
+    py::class_<EdgeSE2Custom, BaseBinaryEdge<3, SE2, VertexSE2, VertexSE2>>(m, "EdgeSE2Custom")
+            .def(py::init<>())
+            .def("compute_error", &EdgeSE2Custom::computeError)
+            .def("set_measurement", &EdgeSE2Custom::setMeasurement)
+            .def("set_measurement_data", &EdgeSE2Custom::setMeasurementData)
+            .def("get_measurement_data", &EdgeSE2Custom::getMeasurementData)
+            .def("measurement_dimension", &EdgeSE2Custom::measurementDimension)
+            .def("set_measurement_from_state", &EdgeSE2Custom::setMeasurementFromState)
+            .def("initial_estimate_possible", &EdgeSE2Custom::initialEstimatePossible)
+            .def("initial_estimate", &EdgeSE2Custom::initialEstimate)
+#ifndef NUMERIC_JACOBIAN_TWO_D_TYPES
+            .def("linearize_oplus", &EdgeSE2Custom::linearizeOplus)
+#endif
+            ;
 
 
 
